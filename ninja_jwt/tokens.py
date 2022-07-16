@@ -98,8 +98,8 @@ class Token:
         # requirement of these settings.As above, the spec labels
         # these as optional.
         if (
-                api_settings.JTI_CLAIM is not None
-                and api_settings.JTI_CLAIM not in self.payload
+            api_settings.JTI_CLAIM is not None
+            and api_settings.JTI_CLAIM not in self.payload
         ):
             raise TokenError(_("Token has no id"))
 

@@ -1,6 +1,6 @@
 import json
 from datetime import timedelta
-from typing import Any, Dict, Union, Optional, Type
+from typing import Any, Dict, Optional, Type, Union
 
 import jwt
 from django.utils.translation import gettext_lazy as _
@@ -39,7 +39,7 @@ class TokenBackend:
         issuer=None,
         jwk_url: str = None,
         leeway: Union[float, int, timedelta] = None,
-        json_encoder: Optional[Type[json.JSONEncoder]] = None
+        json_encoder: Optional[Type[json.JSONEncoder]] = None,
     ) -> None:
         self._validate_algorithm(algorithm)
 
@@ -109,7 +109,12 @@ class TokenBackend:
         if self.issuer is not None:
             jwt_payload["iss"] = self.issuer
 
-        token = jwt.encode(jwt_payload, self.signing_key, algorithm=self.algorithm, json_encoder=self.json_encoder)
+        token = jwt.encode(
+            jwt_payload,
+            self.signing_key,
+            algorithm=self.algorithm,
+            json_encoder=self.json_encoder,
+        )
         if isinstance(token, bytes):
             # For PyJWT <= 1.7.1
             return token.decode("utf-8")

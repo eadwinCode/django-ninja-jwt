@@ -5,7 +5,7 @@ import pytest
 from django.contrib.auth import get_user_model
 from jose import jwt
 
-from ninja_jwt.exceptions import TokenError, TokenBackendError
+from ninja_jwt.exceptions import TokenBackendError, TokenError
 from ninja_jwt.settings import api_settings
 from ninja_jwt.state import token_backend
 from ninja_jwt.tokens import (
