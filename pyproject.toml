@@ -74,5 +74,11 @@ test = [
     "python-jose==3.0.0",
     "click==8.0.4"
 ]
-doc = []
+doc = [
+"mkdocs",
+"mkdocs-material",
+"markdown-include",
+"mdx-include >=1.4.1,<2.0.0",
+"mkdocs-markdownextradata-plugin >=0.1.7,<0.3.0",
+]
 
