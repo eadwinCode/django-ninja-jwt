@@ -29,6 +29,7 @@ class TokenObtainSerializer(ModelSchema):
     class Config:
         model = get_user_model()
         include = ["password", user_name_field]
+        additional = api_settings.ADDITIONAL_FIELDS
 
     _user: Optional[Type[AbstractUser]] = None
 
@@ -36,27 +37,33 @@ class TokenObtainSerializer(ModelSchema):
         "no_active_account": _("No active account found with the given credentials")
     }
 
+    def _get_additional_field_names(cls) -> list:
+        if not cls.Config.additional:
+            return []
+        return [field["field_name"] for field in cls.Config.additional]
+
+    def _get_additional_field_values(cls, values: Dict) -> dict:
+        return {key: values[key] for key in values if key in cls._get_additional_field_names(cls)}
+
     @root_validator(pre=True)
     def validate_inputs(cls, values: Dict) -> dict:
-        if user_name_field not in values and "password" not in values:
-            raise exceptions.ValidationError(
-                {
-                    user_name_field: f"{user_name_field} is required",
-                    "password": "password is required",
-                }
-            )
+        missing_fields = {}
+        for field_name in cls._get_additional_field_names(cls):
+            if not values.get(field_name, None):
+                missing_fields[field_name] = f"{field_name} is required"
 
-        if not values.get(user_name_field):
-            raise exceptions.ValidationError(
-                {user_name_field: f"{user_name_field} is required"}
-            )
+        if not values.get(user_name_field, None):
+            missing_fields[user_name_field] = f"{user_name_field} is required"
 
-        if not values.get("password"):
-            raise exceptions.ValidationError({"password": "password is required"})
+        if not values.get("password", None):
+            missing_fields["password"] = "password is required"
+
+        if missing_fields:
+            raise exceptions.ValidationError(missing_fields)
 
         cls._user = authenticate(**values)
 
-        if not api_settings.USER_AUTHENTICATION_RULE(cls._user):
+        if not api_settings.USER_AUTHENTICATION_RULE(cls._user, **cls._get_additional_field_values(cls, values)):
             raise exceptions.AuthenticationFailed(
                 cls._default_error_messages["no_active_account"]
             )

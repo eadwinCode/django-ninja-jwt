@@ -1,5 +1,5 @@
 from datetime import timedelta
-from typing import Any, List, Optional, Union
+from typing import Any, List, Optional, Union, Dict
 
 from django.conf import settings
 from django.test.signals import setting_changed
@@ -51,6 +51,7 @@ class NinjaJWTSettings(Schema):
 
     USER_ID_FIELD: str = Field("id")
     USER_ID_CLAIM: str = Field("user_id")
+    ADDITIONAL_FIELDS: Optional[List[Dict]] = Field(None)
 
     USER_AUTHENTICATION_RULE: Any = Field(
         "ninja_jwt.authentication.default_user_authentication_rule"
