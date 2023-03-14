@@ -3,9 +3,9 @@ from typing import Any, List, Optional, Union
 
 from django.conf import settings
 from django.test.signals import setting_changed
+from ninja import Schema
 from ninja_extra.lazy import LazyStrImport
-from ninja_schema import Schema
-from pydantic import AnyUrl, Field, root_validator, validator
+from pydantic import AnyUrl, Field, root_validator
 
 
 class NinjaJWTUserDefinedSettingsMapper:
@@ -17,12 +17,6 @@ NinjaJWT_SETTINGS_DEFAULTS = dict(
     USER_AUTHENTICATION_RULE="ninja_jwt.authentication.default_user_authentication_rule",
     AUTH_TOKEN_CLASSES=["ninja_jwt.tokens.AccessToken"],
     TOKEN_USER_CLASS="ninja_jwt.models.TokenUser",
-    # TOKEN_OBTAIN_PAIR_INPUT_SCHEMA="ninja_jwt.schema.TokenObtainPairInputSchema",
-    # TOKEN_OBTAIN_PAIR_REFRESH_INPUT_SCHEMA="ninja_jwt.schema.TokenRefreshInputSchema",
-    # TOKEN_OBTAIN_SLIDING_INPUT_SCHEMA="ninja_jwt.schema.TokenObtainSlidingInputSchema",
-    # TOKEN_OBTAIN_SLIDING_REFRESH_INPUT_SCHEMA="ninja_jwt.schema.TokenRefreshSlidingInputSchema",
-    # TOKEN_BLACKLIST_INPUT_SCHEMA="ninja_jwt.schema.TokenBlacklistInputSchema",
-    # TOKEN_VERIFY_INPUT_SCHEMA="ninja_jwt.schema.TokenVerifyInputSchema",
 )
 
 USER_SETTINGS = NinjaJWTUserDefinedSettingsMapper(
