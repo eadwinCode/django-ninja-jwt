@@ -2,8 +2,10 @@ from datetime import timedelta
 from unittest.mock import patch
 
 import pytest
+import importlib
 from django.contrib.auth import get_user_model
 from ninja import Schema
+from ninja_extra import api_controller
 
 from ninja_jwt.schema import (
     TokenBlacklistInputSchema,
@@ -11,14 +13,15 @@ from ninja_jwt.schema import (
     TokenObtainSlidingInputSchema,
     TokenRefreshInputSchema,
     TokenRefreshSlidingInputSchema,
-    TokenVerifyInputSchema,
+    TokenVerifyInputSchema, TokenRefreshSlidingOutputSchema,
 )
 from ninja_jwt.schema_control import SchemaControl
 from ninja_jwt.settings import api_settings
 from ninja_jwt.tokens import AccessToken, RefreshToken, SlidingToken
 from ninja_jwt.utils import aware_utcnow, datetime_from_epoch, datetime_to_epoch
-
-from .utils import APIViewTestCase
+from ninja_jwt import controller
+from ninja_extra.testing import TestClient
+from pydantic import Field
 
 User = get_user_model()
 
@@ -63,13 +66,17 @@ class MyNewObtainTokenSlidingSchemaInput(TokenObtainSlidingInputSchema):
             **self.dict(exclude={"password"})
         )
 
+class MyTokenRefreshSlidingOutputSchema(TokenRefreshSlidingOutputSchema):
+    ninja_jwt: str = Field(default='Ninja JWT')
 
 class MyTokenRefreshInputSchema(TokenRefreshInputSchema):
     pass
 
 
 class MyTokenRefreshSlidingInputSchema(TokenRefreshSlidingInputSchema):
-    pass
+    @classmethod
+    def get_response_schema(cls):
+        return MyTokenRefreshSlidingOutputSchema
 
 
 class MyTokenVerifyInputSchema(TokenVerifyInputSchema):
@@ -85,12 +92,10 @@ class InvalidTokenSchema(Schema):
 
 
 @pytest.mark.django_db
-class TestTokenObtainPairViewCustomSchema(APIViewTestCase):
-    view_name = "jwt:token_obtain_pair"
+class TestTokenObtainPairViewCustomSchema:
 
     @pytest.fixture(autouse=True)
     def setUp(self):
-        super().setUp()
         self.username = "test_user"
         self.password = "test_password"
 
@@ -108,8 +113,12 @@ class TestTokenObtainPairViewCustomSchema(APIViewTestCase):
                 "TOKEN_OBTAIN_PAIR_INPUT_SCHEMA",
                 "tests.test_custom_schema.MyNewObtainPairSchemaInput",
             )
-            res = self.view_post(
-                data={
+
+            importlib.reload(controller)
+            client = TestClient(controller.NinjaJWTDefaultController)
+            res = client.post(
+                '/pair',
+                json={
                     User.USERNAME_FIELD: self.username,
                     "password": self.password,
                 },
@@ -117,21 +126,19 @@ class TestTokenObtainPairViewCustomSchema(APIViewTestCase):
             )
 
         assert res.status_code == 200
+        data = res.json()
+        assert "access" in data
+        assert "refresh" in data
 
-        assert "access" in res.data
-        assert "refresh" in res.data
-
-        assert res.data["first_name"] == "John"
-        assert res.data["last_name"] == "Doe"
+        assert data["first_name"] == "John"
+        assert data["last_name"] == "Doe"
 
 
 @pytest.mark.django_db
-class TestTokenRefreshViewCustomSchema(APIViewTestCase):
-    view_name = "jwt:token_refresh"
+class TestTokenRefreshViewCustomSchema:
 
     @pytest.fixture(autouse=True)
     def setUp(self):
-        super().setUp()
         self.username = "test_user"
         self.password = "test_password"
 
@@ -152,16 +159,19 @@ class TestTokenRefreshViewCustomSchema(APIViewTestCase):
                 "TOKEN_OBTAIN_PAIR_REFRESH_INPUT_SCHEMA",
                 "tests.test_custom_schema.MyTokenRefreshInputSchema",
             )
+            importlib.reload(controller)
+            client = TestClient(controller.NinjaJWTDefaultController)
             with patch("ninja_jwt.tokens.aware_utcnow") as fake_aware_utcnow:
                 fake_aware_utcnow.return_value = now
 
-                res = self.view_post(
-                    data={"refresh": str(refresh)}, content_type="application/json"
+                res = client.post(
+                    '/refresh',
+                    json={"refresh": str(refresh)}, content_type="application/json"
                 )
 
         assert res.status_code == 200
-
-        access = AccessToken(res.data["access"])
+        data = res.json()
+        access = AccessToken(data["access"])
 
         assert refresh["test_claim"] == access["test_claim"]
         assert access["exp"] == datetime_to_epoch(
@@ -170,12 +180,10 @@ class TestTokenRefreshViewCustomSchema(APIViewTestCase):
 
 
 @pytest.mark.django_db
-class TestTokenObtainSlidingViewCustomSchema(APIViewTestCase):
-    view_name = "jwt:token_obtain_sliding"
+class TestTokenObtainSlidingViewCustomSchema:
 
     @pytest.fixture(autouse=True)
     def setUp(self):
-        super().setUp()
         self.username = "test_user"
         self.password = "test_password"
 
@@ -193,15 +201,19 @@ class TestTokenObtainSlidingViewCustomSchema(APIViewTestCase):
                 "TOKEN_OBTAIN_SLIDING_INPUT_SCHEMA",
                 "tests.test_custom_schema.MyNewObtainTokenSlidingSchemaInput",
             )
-            res = self.view_post(
-                data={
+            importlib.reload(controller)
+            client = TestClient(controller.NinjaJWTSlidingController)
+            res = client.post(
+                '/sliding',
+                json={
                     User.USERNAME_FIELD: self.username,
                     "password": "test_password",
                 },
                 content_type="application/json",
             )
         assert res.status_code == 422
-        assert res.data == {
+        data = res.json()
+        assert data == {
             "detail": [
                 {
                     "loc": ["body", "user_token", "my_extra_field"],
@@ -218,27 +230,31 @@ class TestTokenObtainSlidingViewCustomSchema(APIViewTestCase):
                 "TOKEN_OBTAIN_SLIDING_INPUT_SCHEMA",
                 "tests.test_custom_schema.MyNewObtainTokenSlidingSchemaInput",
             )
-            res = self.view_post(
-                data={
+            importlib.reload(controller)
+            client = TestClient(controller.NinjaJWTSlidingController)
+            res = client.post(
+                '/sliding',
+                json={
                     User.USERNAME_FIELD: self.username,
                     "password": self.password,
                     "my_extra_field": "some_data",
                 },
                 content_type="application/json",
             )
+
         assert res.status_code == 200
-        assert "token" in res.data
-        assert res.data["first_name"] == "John"
-        assert res.data["last_name"] == "Doe"
+        data = res.json()
+
+        assert "token" in data
+        assert data["first_name"] == "John"
+        assert data["last_name"] == "Doe"
 
 
 @pytest.mark.django_db
-class TestTokenRefreshSlidingViewCustomSchema(APIViewTestCase):
-    view_name = "jwt:token_refresh_sliding"
+class TestTokenRefreshSlidingViewCustomSchema:
 
     @pytest.fixture(autouse=True)
     def setUp(self):
-        super().setUp()
         self.username = "test_user"
         self.password = "test_password"
 
@@ -262,26 +278,28 @@ class TestTokenRefreshSlidingViewCustomSchema(APIViewTestCase):
                 "TOKEN_OBTAIN_SLIDING_REFRESH_INPUT_SCHEMA",
                 "tests.test_custom_schema.MyTokenRefreshSlidingInputSchema",
             )
+            importlib.reload(controller)
+            client = TestClient(controller.NinjaJWTSlidingController)
             # View returns 200
-            res = self.view_post(
-                data={"token": str(token)}, content_type="application/json"
+            res = client.post(
+                '/sliding/refresh',
+                json={"token": str(token)}, content_type="application/json"
             )
         assert res.status_code == 200
-
+        data = res.json()
+        assert data['ninja_jwt'] == 'Ninja JWT'
         # Expiration claim has moved into future
-        new_token = SlidingToken(res.data["token"])
+        new_token = SlidingToken(data["token"])
         new_exp = datetime_from_epoch(new_token["exp"])
 
         assert exp < new_exp
 
 
 @pytest.mark.django_db
-class TestTokenVerifyViewCustomSchema(APIViewTestCase):
-    view_name = "jwt:token_verify"
+class TestTokenVerifyViewCustomSchema:
 
     @pytest.fixture(autouse=True)
     def setUp(self):
-        super().setUp()
         self.username = "test_user"
         self.password = "test_password"
 
@@ -298,20 +316,21 @@ class TestTokenVerifyViewCustomSchema(APIViewTestCase):
                 "TOKEN_VERIFY_INPUT_SCHEMA",
                 "tests.test_custom_schema.MyTokenVerifyInputSchema",
             )
-            res = self.view_post(
-                data={"token": str(token)}, content_type="application/json"
+            importlib.reload(controller)
+            client = TestClient(controller.NinjaJWTDefaultController)
+            res = client.post(
+                '/verify',
+                json={"token": str(token)}, content_type="application/json"
             )
         assert res.status_code == 200
-        assert res.data == {}
+        assert res.json() == {}
 
 
 @pytest.mark.django_db
-class TestTokenBlacklistViewCustomSchema(APIViewTestCase):
-    view_name = "jwt:token_blacklist"
+class TestTokenBlacklistViewCustomSchema:
 
     @pytest.fixture(autouse=True)
     def setUp(self):
-        super().setUp()
         self.username = "test_user"
         self.password = "test_password"
 
@@ -332,17 +351,21 @@ class TestTokenBlacklistViewCustomSchema(APIViewTestCase):
                 "TOKEN_BLACKLIST_INPUT_SCHEMA",
                 "tests.test_custom_schema.MyTokenBlacklistInputSchema",
             )
+            importlib.reload(controller)
+            client = TestClient(api_controller()(controller.TokenBlackListController))
             with patch("ninja_jwt.tokens.aware_utcnow") as fake_aware_utcnow:
                 fake_aware_utcnow.return_value = now
 
-                res = self.view_post(
-                    data={"refresh": str(refresh)}, content_type="application/json"
+                res = client.post(
+                    '/blacklist',
+                    json={"refresh": str(refresh)}, content_type="application/json"
                 )
 
         assert res.status_code == 200
 
-        assert res.data == {}
+        assert res.json() == {}
 
+importlib.reload(controller)
 
 class TestSchemaControlExceptions:
     def test_verify_schema_exception(self, monkeypatch):

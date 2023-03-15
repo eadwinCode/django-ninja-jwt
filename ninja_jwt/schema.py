@@ -201,8 +201,8 @@ class TokenRefreshOutputSchema(Schema):
             refresh.set_iat()
 
             data["refresh"] = str(refresh)
-
-        return data
+        values.update(data)
+        return values
 
 
 class TokenRefreshSlidingInputSchema(Schema, InputSchemaMixin):
@@ -237,8 +237,8 @@ class TokenRefreshSlidingOutputSchema(Schema):
         # Update the "exp" and "iat" claims
         token.set_exp()
         token.set_iat()
-
-        return {"token": str(token)}
+        values.update({"token": str(token)})
+        return values
 
 
 class TokenVerifyInputSchema(Schema, InputSchemaMixin):
