@@ -1,4 +1,5 @@
 import django
+from ninja import Schema
 from ninja_extra import ControllerBase, api_controller, http_post
 from ninja_extra.permissions import AllowAny
 
@@ -37,7 +38,7 @@ class TokenVerificationController(ControllerBase):
 
     @http_post(
         "/verify",
-        response={200: schema.verify_schema.get_response_schema()},
+        response={200: Schema},
         url_name="token_verify",
     )
     def verify_token(self, token: schema.verify_schema):
@@ -49,7 +50,7 @@ class TokenBlackListController(ControllerBase):
 
     @http_post(
         "/blacklist",
-        response={200: schema.blacklist_schema.get_response_schema()},
+        response={200: Schema},
         url_name="token_blacklist",
     )
     def blacklist_token(self, refresh: schema.blacklist_schema):
@@ -124,7 +125,7 @@ if not django.VERSION < (3, 1):
     class AsyncTokenVerificationController(TokenVerificationController):
         @http_post(
             "/verify",
-            response={200: schema.verify_schema.get_response_schema()},
+            response={200: Schema},
             url_name="token_verify",
         )
         async def verify_token(self, token: schema.verify_schema):
@@ -135,7 +136,7 @@ if not django.VERSION < (3, 1):
 
         @http_post(
             "/blacklist",
-            response={200: schema.blacklist_schema.get_response_schema()},
+            response={200: Schema},
             url_name="token_blacklist",
         )
         async def blacklist_token(self, refresh: schema.blacklist_schema):

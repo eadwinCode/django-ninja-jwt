@@ -6,7 +6,7 @@ from django.core.management import call_command
 from django.db.models import BigAutoField
 
 from ninja_jwt.exceptions import TokenError
-from ninja_jwt.schema import TokenVerifySerializer
+from ninja_jwt.schema import TokenRefreshInputSchema
 from ninja_jwt.settings import api_settings
 from ninja_jwt.token_blacklist.models import BlacklistedToken, OutstandingToken
 from ninja_jwt.tokens import AccessToken, RefreshToken, SlidingToken

@@ -4,7 +4,7 @@ from django.utils.module_loading import import_string
 
 from ninja_jwt.schema import InputSchemaMixin, TokenInputSchemaMixin
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from ninja_jwt.settings import NinjaJWTSettings
 
 
