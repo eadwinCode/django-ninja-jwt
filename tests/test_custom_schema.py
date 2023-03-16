@@ -1,5 +1,6 @@
 import importlib
 from datetime import timedelta
+from typing import Dict, Type
 from unittest.mock import patch
 
 import pytest
@@ -12,7 +13,7 @@ from pydantic import Field
 from ninja_jwt import controller
 from ninja_jwt.schema import (
     TokenBlacklistInputSchema,
-    TokenObtainPairInputSchema,
+    TokenObtainInputSchemaBase,
     TokenObtainSlidingInputSchema,
     TokenRefreshInputSchema,
     TokenRefreshSlidingInputSchema,
@@ -40,17 +41,21 @@ class MyNewObtainTokenSlidingSchemaOutput(Schema):
     last_name: str
 
 
-class MyNewObtainPairSchemaInput(TokenObtainPairInputSchema):
+class MyNewObtainPairSchemaInput(TokenObtainInputSchemaBase):
     @classmethod
     def get_response_schema(cls):
         return MyNewObtainPairTokenSchemaOutput
 
-    def to_response_schema(self):
-        return MyNewObtainPairTokenSchemaOutput(
-            first_name=self._user.first_name,
-            last_name=self._user.last_name,
-            **self.dict(exclude={"password"})
-        )
+    @classmethod
+    def get_token(cls, user) -> Dict:
+        values = {}
+        refresh = RefreshToken.for_user(user)
+        values["refresh"] = str(refresh)
+        values["access"] = str(refresh.access_token)
+        values.update(
+            first_name=user.first_name, last_name=user.last_name
+        )  # this will be needed when creating output schema
+        return values
 
 
 class MyNewObtainTokenSlidingSchemaInput(TokenObtainSlidingInputSchema):
