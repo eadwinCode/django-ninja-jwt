@@ -1,5 +1,5 @@
 import warnings
-from typing import Any, Callable, Dict, Optional, Type, cast
+from typing import Any, Callable, Dict, Optional, Type, Union, cast
 
 from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model
@@ -47,7 +47,9 @@ class TokenInputSchemaMixin(InputSchemaMixin):
     }
 
     @classmethod
-    def check_user_authentication_rule(cls, user: Optional[AbstractUser]) -> bool:
+    def check_user_authentication_rule(
+        cls, user: Optional[Union[AbstractUser, Any]], values: Dict
+    ) -> bool:
         return api_settings.USER_AUTHENTICATION_RULE(user)
 
     @classmethod
@@ -70,7 +72,7 @@ class TokenInputSchemaMixin(InputSchemaMixin):
 
         _user = authenticate(**values)
 
-        if not cls.check_user_authentication_rule(_user):
+        if not cls.check_user_authentication_rule(_user, values):
             raise exceptions.AuthenticationFailed(
                 cls._default_error_messages["no_active_account"]
             )
