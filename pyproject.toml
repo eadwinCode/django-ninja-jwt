@@ -79,6 +79,10 @@ crypto = [
     "cryptography>=3.3.1",
 ]
 
+dev = [
+    "pre-commit"
+]
+
 doc = [
 "mkdocs >=1.1.2,<2.0.0",
 "mkdocs-material",
@@ -87,4 +91,3 @@ doc = [
 "mkdocs-markdownextradata-plugin >=0.1.7,<0.3.0",
 "mkdocstrings"
 ]
-

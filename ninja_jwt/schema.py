@@ -1,5 +1,5 @@
 import warnings
-from typing import Any, Dict, Optional, Type, cast
+from typing import Any, Callable, Dict, Optional, Type, cast
 
 from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model
@@ -12,7 +12,7 @@ import ninja_jwt.exceptions as exceptions
 from ninja_jwt.utils import token_error
 
 from .settings import api_settings
-from .tokens import RefreshToken, SlidingToken, Token, UntypedToken
+from .tokens import RefreshToken, SlidingToken, UntypedToken
 
 if api_settings.BLACKLIST_AFTER_ROTATION:
     from .token_blacklist.models import BlacklistedToken
@@ -27,14 +27,20 @@ class AuthUserSchema(ModelSchema):
 
 
 class InputSchemaMixin:
+    dict: Callable
+
     @classmethod
     def get_response_schema(cls) -> Type[Schema]:
         raise NotImplementedError("Must implement `get_response_schema`")
 
+    def to_response_schema(self):
+        _schema_type = self.get_response_schema()
+        return _schema_type(**self.dict())
+
 
 class TokenInputSchemaMixin(InputSchemaMixin):
 
-    _user: Optional[Type[AbstractUser]] = None
+    _user: Optional[AbstractUser] = None
 
     _default_error_messages = {
         "no_active_account": _("No active account found with the given credentials")
@@ -81,11 +87,8 @@ class TokenInputSchemaMixin(InputSchemaMixin):
         )
         return self.to_response_schema()
 
-    def to_response_schema(self) -> Schema:
-        raise NotImplementedError("Must implement `to_response_schema` method")
-
     @classmethod
-    def get_token(cls, user: Type[AbstractUser]) -> Type[Token]:
+    def get_token(cls, user: AbstractUser) -> Dict:
         raise NotImplementedError(
             "Must implement `get_token` method for `TokenObtainSerializer` subclasses"
         )
@@ -99,6 +102,30 @@ class TokenObtainInputSchemaBase(ModelSchema, TokenInputSchemaMixin):
     @root_validator(pre=True)
     def validate_inputs(cls, values: Dict) -> dict:
         return cls.validate_values(values)
+
+    @root_validator
+    def post_validate(cls, values: Dict) -> dict:
+        return cls.post_validate_schema(values)
+
+    @classmethod
+    def post_validate_schema(cls, values: Dict) -> dict:
+        """
+        This is a post validate process which is common for any token generating schema.
+        :param values:
+        :return:
+        """
+        # get_token can return values that wants to apply to `OutputSchema`
+        data = cls.get_token(cls._user)
+
+        if not isinstance(data, dict):
+            raise Exception("`get_token` must return a `typing.Dict` type.")
+
+        values.update(data)
+
+        if api_settings.UPDATE_LAST_LOGIN:
+            update_last_login(None, cls._user)
+
+        return values
 
     def to_response_schema(self):
         _schema_type = self.get_response_schema()
@@ -116,20 +143,12 @@ class TokenObtainPairInputSchema(TokenObtainInputSchemaBase):
         return TokenObtainPairOutputSchema
 
     @classmethod
-    def get_token(cls, user: Type[AbstractUser]) -> Type[Token]:
-        return RefreshToken.for_user(user)
-
-    @root_validator
-    def validate_schema(cls, values: Dict) -> dict:
-        refresh = cls.get_token(cls._user)
+    def get_token(cls, user: AbstractUser) -> Dict:
+        values = {}
+        refresh = RefreshToken.for_user(user)
         refresh = cast(RefreshToken, refresh)
-
         values["refresh"] = str(refresh)
         values["access"] = str(refresh.access_token)
-
-        if api_settings.UPDATE_LAST_LOGIN:
-            update_last_login(None, cls._user)
-
         return values
 
 
@@ -143,18 +162,10 @@ class TokenObtainSlidingInputSchema(TokenObtainInputSchemaBase):
         return TokenObtainSlidingOutputSchema
 
     @classmethod
-    def get_token(cls, user: Type[AbstractUser]) -> Type[Token]:
-        return SlidingToken.for_user(user)
-
-    @root_validator
-    def validate_schema(cls, values: Dict) -> dict:
-        token = cls.get_token(cls._user)
-
-        values["token"] = str(token)
-
-        if api_settings.UPDATE_LAST_LOGIN and cls._user:
-            update_last_login(cls, cls._user)
-
+    def get_token(cls, user: AbstractUser) -> Dict:
+        values = {}
+        slide_token = SlidingToken.for_user(user)
+        values["token"] = str(slide_token)
         return values
 
 
@@ -265,6 +276,9 @@ class TokenVerifyInputSchema(Schema, InputSchemaMixin):
     def get_response_schema(cls) -> Type[Schema]:
         return Schema
 
+    def to_response_schema(self):
+        return {}
+
 
 class TokenBlacklistInputSchema(Schema, InputSchemaMixin):
     refresh: str
@@ -284,6 +298,9 @@ class TokenBlacklistInputSchema(Schema, InputSchemaMixin):
     @classmethod
     def get_response_schema(cls) -> Type[Schema]:
         return Schema
+
+    def to_response_schema(self):
+        return {}
 
 
 __deprecated__ = {

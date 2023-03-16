@@ -42,7 +42,7 @@ class TokenVerificationController(ControllerBase):
         url_name="token_verify",
     )
     def verify_token(self, token: schema.verify_schema):
-        return {}
+        return token.to_response_schema()
 
 
 class TokenBlackListController(ControllerBase):
@@ -54,7 +54,7 @@ class TokenBlackListController(ControllerBase):
         url_name="token_blacklist",
     )
     def blacklist_token(self, refresh: schema.blacklist_schema):
-        return {}
+        return refresh.to_response_schema()
 
 
 class TokenObtainPairController(ControllerBase):
@@ -74,8 +74,7 @@ class TokenObtainPairController(ControllerBase):
         url_name="token_refresh",
     )
     def refresh_token(self, refresh_token: schema.obtain_pair_refresh_schema):
-        _response_schema = schema.obtain_pair_refresh_schema.get_response_schema()
-        return _response_schema(**refresh_token.dict())
+        return refresh_token.to_response_schema()
 
 
 class TokenObtainSlidingController(TokenObtainPairController):
@@ -95,9 +94,7 @@ class TokenObtainSlidingController(TokenObtainPairController):
         url_name="token_refresh_sliding",
     )
     def refresh_token(self, refresh_token: schema.obtain_sliding_refresh_schema):
-        _response_schema = schema.obtain_sliding_refresh_schema.get_response_schema()
-        refresh = _response_schema(**refresh_token.dict())
-        return refresh
+        return refresh_token.to_response_schema()
 
 
 @api_controller("/token", permissions=[AllowAny], tags=["token"])
@@ -129,7 +126,7 @@ if not django.VERSION < (3, 1):
             url_name="token_verify",
         )
         async def verify_token(self, token: schema.verify_schema):
-            return {}
+            return token.to_response_schema()
 
     class AsyncTokenBlackListController(TokenBlackListController):
         auto_import = False
@@ -140,7 +137,7 @@ if not django.VERSION < (3, 1):
             url_name="token_blacklist",
         )
         async def blacklist_token(self, refresh: schema.blacklist_schema):
-            return {}
+            return refresh.to_response_schema()
 
     class AsyncTokenObtainPairController(TokenObtainPairController):
         @http_post(
@@ -157,8 +154,7 @@ if not django.VERSION < (3, 1):
             url_name="token_refresh",
         )
         async def refresh_token(self, refresh_token: schema.obtain_pair_refresh_schema):
-            _response_schema = schema.obtain_pair_refresh_schema.get_response_schema()
-            refresh = await sync_to_async(_response_schema)(**refresh_token.dict())
+            refresh = await sync_to_async(refresh_token.to_response_schema)()
             return refresh
 
     class AsyncTokenObtainSlidingController(TokenObtainSlidingController):
@@ -178,10 +174,7 @@ if not django.VERSION < (3, 1):
         async def refresh_token(
             self, refresh_token: schema.obtain_sliding_refresh_schema
         ):
-            _response_schema = (
-                schema.obtain_sliding_refresh_schema.get_response_schema()
-            )
-            refresh = await sync_to_async(_response_schema)(**refresh_token.dict())
+            refresh = await sync_to_async(refresh_token.to_response_schema)()
             return refresh
 
     @api_controller("/token", permissions=[AllowAny], tags=["token"])
