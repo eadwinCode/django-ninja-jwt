@@ -67,7 +67,7 @@ test = [
     "pytest-cov",
     "pytest-django",
     "pytest-asyncio",
-    "black==21.12b0",
+    "black==23.3.0",
     "isort >=5.0.6,<6.0.0",
     "flake8 >=3.8.3,<7.0.0",
     "django-stubs",
