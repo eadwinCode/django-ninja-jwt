@@ -5,14 +5,16 @@
 [![PyPI version](https://img.shields.io/pypi/pyversions/django-ninja-jwt.svg)](https://pypi.python.org/pypi/django-ninja-jwt)
 [![PyPI version](https://img.shields.io/pypi/djversions/django-ninja-jwt.svg)](https://pypi.python.org/pypi/django-ninja-jwt)
 [![Codecov](https://img.shields.io/codecov/c/gh/eadwinCode/django-ninja-jwt)](https://codecov.io/gh/eadwinCode/django-ninja-jwt)
-[![Downloads](https://static.pepy.tech/personalized-badge/django-ninja-jwt?period=month&units=international_system&left_color=black&right_color=orange&left_text=Downloads/month)](https://pepy.tech/project/django-ninja-jwt)
+[![Downloads](https://static.pepy.tech/badge/django-ninja-jwt)](https://pepy.tech/project/django-ninja-jwt)
+
 
 ## Abstract
 
 Ninja JWT is JSON Web Token plugin for Django-Ninja. The library is a fork of [Simple JWT](https://github.com/jazzband/djangorestframework-simplejwt) by Jazzband, a popular  JWT plugin for [Django REST Framework](http://www.django-rest-framework.org).
+
 #### Notice
 This library does not fix any issues from the source SIMPLE JWT. 
-It only added support for Django-Ninja and removes DRF dependencies but time after time, subsequent updates from SIMPLE JWT will reflect here.
+It only added support for Django-Ninja and removes DRF dependencies. And time after time, subsequent updates from SIMPLE JWT will reflect here.
 
 For full documentation, [visit](https://eadwincode.github.io/django-ninja-jwt/).
 
