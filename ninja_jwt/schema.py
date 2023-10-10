@@ -1,12 +1,13 @@
 import warnings
-from typing import Any, Callable, Dict, Optional, Type, cast
+from typing import Any, Dict, Optional, Type, cast
 
 from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.models import AbstractUser, update_last_login
 from django.utils.translation import gettext_lazy as _
 from ninja import ModelSchema, Schema
-from pydantic import root_validator
+from ninja.schema import DjangoGetter
+from pydantic import model_validator
 
 import ninja_jwt.exceptions as exceptions
 from ninja_jwt.utils import token_error
@@ -27,8 +28,6 @@ class AuthUserSchema(ModelSchema):
 
 
 class InputSchemaMixin:
-    dict: Callable
-
     @classmethod
     def get_response_schema(cls) -> Type[Schema]:
         raise NotImplementedError("Must implement `get_response_schema`")
@@ -52,8 +51,8 @@ class TokenInputSchemaMixin(InputSchemaMixin):
             )
 
     @classmethod
-    def validate_values(cls, values: Dict) -> dict:
-        if user_name_field not in values and "password" not in values:
+    def validate_values(cls, values: DjangoGetter) -> DjangoGetter:
+        if not hasattr(values, user_name_field) and not hasattr(values, "password"):
             raise exceptions.ValidationError(
                 {
                     user_name_field: f"{user_name_field} is required",
@@ -61,15 +60,20 @@ class TokenInputSchemaMixin(InputSchemaMixin):
                 }
             )
 
-        if not values.get(user_name_field):
+        if not hasattr(values, user_name_field):
             raise exceptions.ValidationError(
                 {user_name_field: f"{user_name_field} is required"}
             )
 
-        if not values.get("password"):
+        if not hasattr(values, "password"):
             raise exceptions.ValidationError({"password": "password is required"})
 
-        _user = authenticate(**values)
+        _user = authenticate(
+            **{
+                user_name_field: getattr(values, user_name_field),
+                "password": values.password,
+            }
+        )
         cls._user = _user
 
         if not (_user is not None and _user.is_active):
@@ -96,14 +100,15 @@ class TokenInputSchemaMixin(InputSchemaMixin):
 
 class TokenObtainInputSchemaBase(ModelSchema, TokenInputSchemaMixin):
     class Config:
+        extra = "allow"
         model = get_user_model()
         model_fields = ["password", user_name_field]
 
-    @root_validator(pre=True)
-    def validate_inputs(cls, values: Dict) -> dict:
+    @model_validator(mode="before")
+    def validate_inputs(cls, values: DjangoGetter) -> DjangoGetter:
         return cls.validate_values(values)
 
-    @root_validator
+    @model_validator(mode="after")
     def post_validate(cls, values: Dict) -> dict:
         return cls.post_validate_schema(values)
 
@@ -121,7 +126,7 @@ class TokenObtainInputSchemaBase(ModelSchema, TokenInputSchemaMixin):
         if not isinstance(data, dict):
             raise Exception("`get_token` must return a `typing.Dict` type.")
 
-        values.update(data)
+        values.__pydantic_extra__.update(data)
 
         if api_settings.UPDATE_LAST_LOGIN:
             update_last_login(None, cls._user)
@@ -173,11 +178,11 @@ class TokenObtainSlidingInputSchema(TokenObtainInputSchemaBase):
 class TokenRefreshInputSchema(Schema, InputSchemaMixin):
     refresh: str
 
-    @root_validator
-    def validate_schema(cls, values: Dict) -> dict:
-        if not values.get("refresh"):
-            raise exceptions.ValidationError({"refresh": "token is required"})
-        return values
+    # @model_validator(mode="before")
+    # def validate_schema(cls, values: Dict) -> dict:
+    #     if not values.get("refresh"):
+    #         raise exceptions.ValidationError({"refresh": "token is required"})
+    #     return values
 
     @classmethod
     def get_response_schema(cls) -> Type[Schema]:
@@ -188,11 +193,11 @@ class TokenRefreshOutputSchema(Schema):
     refresh: str
     access: Optional[str]
 
-    @root_validator
+    @model_validator(mode="after")
     @token_error
     def validate_schema(cls, values: Dict) -> dict:
-        if not values.get("refresh"):
-            raise exceptions.ValidationError({"refresh": "refresh token is required"})
+        # if not values.get("refresh"):
+        #     raise exceptions.ValidationError({"refresh": "refresh token is required"})
 
         refresh = RefreshToken(values["refresh"])
 
@@ -220,11 +225,11 @@ class TokenRefreshOutputSchema(Schema):
 class TokenRefreshSlidingInputSchema(Schema, InputSchemaMixin):
     token: str
 
-    @root_validator
-    def validate_schema(cls, values: Dict) -> dict:
-        if not values.get("token"):
-            raise exceptions.ValidationError({"token": "token is required"})
-        return values
+    # @model_validator(mode="after")
+    # def validate_schema(cls, values: Dict) -> dict:
+    #     if not values.get("token"):
+    #         raise exceptions.ValidationError({"token": "token is required"})
+    #     return values
 
     @classmethod
     def get_response_schema(cls) -> Type[Schema]:
@@ -234,11 +239,11 @@ class TokenRefreshSlidingInputSchema(Schema, InputSchemaMixin):
 class TokenRefreshSlidingOutputSchema(Schema):
     token: str
 
-    @root_validator
+    @model_validator(mode="after")
     @token_error
     def validate_schema(cls, values: Dict) -> dict:
-        if not values.get("token"):
-            raise exceptions.ValidationError({"token": "token is required"})
+        # if not values.get("token"):
+        #     raise exceptions.ValidationError({"token": "token is required"})
 
         token = SlidingToken(values["token"])
 
@@ -256,11 +261,11 @@ class TokenRefreshSlidingOutputSchema(Schema):
 class TokenVerifyInputSchema(Schema, InputSchemaMixin):
     token: str
 
-    @root_validator
+    @model_validator(mode="before")
     @token_error
-    def validate_schema(cls, values: Dict) -> dict:
-        if not values.get("token"):
-            raise exceptions.ValidationError({"token": "token is required"})
+    def validate_schema(cls, values: Dict) -> Dict:
+        # if not values.get("token"):
+        #     raise exceptions.ValidationError({"token": "token is required"})
         token = UntypedToken(values["token"])
 
         if (
@@ -284,11 +289,11 @@ class TokenVerifyInputSchema(Schema, InputSchemaMixin):
 class TokenBlacklistInputSchema(Schema, InputSchemaMixin):
     refresh: str
 
-    @root_validator
+    @model_validator(mode="before")
     @token_error
     def validate_schema(cls, values: Dict) -> dict:
-        if not values.get("refresh"):
-            raise exceptions.ValidationError({"refresh": "refresh token is required"})
+        # if not values.get("refresh"):
+        #     raise exceptions.ValidationError({"refresh": "refresh token is required"})
         refresh = RefreshToken(values["refresh"])
         try:
             refresh.blacklist()
