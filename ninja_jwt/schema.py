@@ -135,11 +135,14 @@ class TokenObtainInputSchemaBase(ModelSchema, TokenInputSchemaMixin):
 
         return values
 
+    def get_response_schema_init_kwargs(self) -> dict:
+        return dict(
+            self.dict(exclude={"password"}), **self.__dict__.get("token_data", {})
+        )
+
     def to_response_schema(self):
         _schema_type = self.get_response_schema()
-        return _schema_type(
-            **self.dict(exclude={"password"}), **self.__dict__.get("token_data", {})
-        )
+        return _schema_type(**self.get_response_schema_init_kwargs())
 
 
 class TokenObtainPairOutputSchema(AuthUserSchema):
