@@ -226,8 +226,8 @@ class TestTokenObtainSlidingViewCustomSchema:
             "detail": [
                 {
                     "loc": ["body", "user_token", "my_extra_field"],
-                    "msg": "field required",
-                    "type": "value_error.missing",
+                    "msg": "Field required",
+                    "type": "missing",
                 }
             ]
         }

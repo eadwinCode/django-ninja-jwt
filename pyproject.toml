@@ -66,8 +66,8 @@ test = [
     "pytest-cov",
     "pytest-django",
     "pytest-asyncio",
-    "ruff ==0.0.275",
-    "black == 23.7.0",
+    "black ==23.10.1",
+    "ruff ==0.1.4",
     "django-stubs",
     "python-jose==3.3.0",
     "click==8.0.4"
