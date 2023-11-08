@@ -96,7 +96,7 @@ class TokenInputSchemaMixin(InputSchemaMixin):
 
 class TokenObtainInputSchemaBase(ModelSchema, TokenInputSchemaMixin):
     class Config:
-        extra = "allow"
+        # extra = "allow"
         model = get_user_model()
         model_fields = ["password", user_name_field]
 
@@ -126,7 +126,9 @@ class TokenObtainInputSchemaBase(ModelSchema, TokenInputSchemaMixin):
         if not isinstance(data, dict):
             raise Exception("`get_token` must return a `typing.Dict` type.")
 
-        values.__pydantic_extra__.update(data)
+        # a workaround for extra attributes since adding extra=allow in modelconfig adds `addition_props`
+        # field to the schema
+        values.__dict__.update(token_data=data)
 
         if api_settings.UPDATE_LAST_LOGIN:
             update_last_login(None, cls._user)
@@ -135,7 +137,9 @@ class TokenObtainInputSchemaBase(ModelSchema, TokenInputSchemaMixin):
 
     def to_response_schema(self):
         _schema_type = self.get_response_schema()
-        return _schema_type(**self.dict(exclude={"password"}))
+        return _schema_type(
+            **self.dict(exclude={"password"}), **self.__dict__.get("token_data", {})
+        )
 
 
 class TokenObtainPairOutputSchema(AuthUserSchema):
