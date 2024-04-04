@@ -2,47 +2,47 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://eadwincode.github.io/django-ninja-jwt/</loc>
-         <lastmod>2023-12-02</lastmod>
+         <lastmod>2024-04-04</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://eadwincode.github.io/django-ninja-jwt/auth_integration/</loc>
-         <lastmod>2023-12-02</lastmod>
+         <lastmod>2024-04-04</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://eadwincode.github.io/django-ninja-jwt/blacklist_app/</loc>
-         <lastmod>2023-12-02</lastmod>
+         <lastmod>2024-04-04</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://eadwincode.github.io/django-ninja-jwt/creating_tokens_manually/</loc>
-         <lastmod>2023-12-02</lastmod>
+         <lastmod>2024-04-04</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://eadwincode.github.io/django-ninja-jwt/customizing_token_claims/</loc>
-         <lastmod>2023-12-02</lastmod>
+         <lastmod>2024-04-04</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://eadwincode.github.io/django-ninja-jwt/development_and_contributing/</loc>
-         <lastmod>2023-12-02</lastmod>
+         <lastmod>2024-04-04</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://eadwincode.github.io/django-ninja-jwt/getting_started/</loc>
-         <lastmod>2023-12-02</lastmod>
+         <lastmod>2024-04-04</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://eadwincode.github.io/django-ninja-jwt/settings/</loc>
-         <lastmod>2023-12-02</lastmod>
+         <lastmod>2024-04-04</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://eadwincode.github.io/django-ninja-jwt/token_types/</loc>
-         <lastmod>2023-12-02</lastmod>
+         <lastmod>2024-04-04</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
