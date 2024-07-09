@@ -334,12 +334,40 @@
       <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
       
       
-        
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Token Types
+          <span class="md-nav__icon md-icon"></span>
+        </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
         Token Types
       </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#sliding-tokens" class="md-nav__link">
+    Sliding tokens
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -408,8 +436,21 @@
   
   
   
-    
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#sliding-tokens" class="md-nav__link">
+    Sliding tokens
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -425,6 +466,8 @@
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
+                
+                  <h1>Token Types</h1>
                 
                 <p>Ninja JWT provides two different token types that can be used to prove
 authentication. In a token's payload, its type can be identified by the
@@ -442,11 +485,11 @@ dot path by default but may also include the
 paths may be present in the list of auth token classes. If they are both
 present, then both of those token types may be used to prove
 authentication.</p>
-<h1 id="sliding-tokens">Sliding tokens</h1>
+<h2 id="sliding-tokens">Sliding tokens</h2>
 <p>Sliding tokens offer a more convenient experience to users of tokens
 with the trade-offs of being less secure and, in the case that the
 blacklist app is being used, less performant. A sliding token is one
-which contains both an expiration claim and a refresh expiration claim.
+that contains both an expiration claim and a refresh expiration claim.
 As long as the timestamp in a sliding token\'s expiration claim has not
 passed, it can be used to prove authentication. Additionally, as long as
 the timestamp in its refresh expiration claim has not passed, it may

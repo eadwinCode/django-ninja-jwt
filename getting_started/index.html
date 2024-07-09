@@ -295,15 +295,22 @@
     Installation
   </a>
   
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#using-ninja-router" class="md-nav__link">
+    Using Ninja Router
+  </a>
+  
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#usage" class="md-nav__link">
     Usage
   </a>
   
-    <nav class="md-nav" aria-label="Usage">
-      <ul class="md-nav__list">
+</li>
         
           <li class="md-nav__item">
   <a href="#cryptographic-dependencies-optional" class="md-nav__link">
@@ -482,15 +489,22 @@
     Installation
   </a>
   
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#using-ninja-router" class="md-nav__link">
+    Using Ninja Router
+  </a>
+  
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#usage" class="md-nav__link">
     Usage
   </a>
   
-    <nav class="md-nav" aria-label="Usage">
-      <ul class="md-nav__list">
+</li>
         
           <li class="md-nav__item">
   <a href="#cryptographic-dependencies-optional" class="md-nav__link">
@@ -536,7 +550,7 @@ see what is possible.</p>
 <div class="codehilite"><pre><span></span><code>pip install django-ninja-jwt
 </code></pre></div>
 
-<p>Also, you need to register <code>NinjaJWTDefaultController</code> controller to you Django-Ninja api.
+<p>Also, you need to register <code>NinjaJWTDefaultController</code> controller to your Django-Ninja api.
 The <code>NinjaJWTDefaultController</code> comes with three routes <code>obtain_token</code>, <code>refresh_token</code> and <code>verify_token</code></p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">ninja_jwt.controller</span> <span class="kn">import</span> <span class="n">NinjaJWTDefaultController</span>
 <span class="kn">from</span> <span class="nn">ninja_extra</span> <span class="kn">import</span> <span class="n">NinjaExtraAPI</span>
@@ -544,7 +558,7 @@ The <code>NinjaJWTDefaultController</code> comes with three routes <code>obtain_
 <span class="n">api</span> <span class="o">=</span> <span class="n">NinjaExtraAPI</span><span class="p">()</span>
 <span class="n">api</span><span class="o">.</span><span class="n">register_controllers</span><span class="p">(</span><span class="n">NinjaJWTDefaultController</span><span class="p">)</span>
 </code></pre></div>
-<p>The <code>NinjaJWTDefaultController</code> comes with three routes <code>obtain_token</code>, <code>refresh_token</code> and <code>verify_token</code>. 
+<p>The <code>NinjaJWTDefaultController</code> comes with three routes <code>obtain_token</code>, <code>refresh_token</code> and <code>verify_token</code>.
 It is a combination of two subclass <code>TokenVerificationController</code> and <code>TokenObtainPairController</code>.
 If you wish to customize these routes, you can inherit from these controllers and change its implementation</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">ninja_extra</span> <span class="kn">import</span> <span class="n">api_controller</span>
@@ -564,7 +578,11 @@ If you wish to customize these routes, you can inherit from these controllers an
     <span class="o">...</span>
 <span class="p">]</span>
 </code></pre></div>
-<h1 id="usage">Usage</h1>
+<h2 id="using-ninja-router">Using Ninja Router</h2>
+<p>If you prefer not to follow the NinjaExtra methodology,
+refer to this <a href="https://eadwincode.github.io/django-ninja-jwt/customizing_token_claims/#use-django-ninja-router">documentation</a>
+on how to use <code>Ninja-JWT</code> with <code>Django-Ninja Router</code>.</p>
+<h2 id="usage">Usage</h2>
 <p>To verify that Ninja JWT is working, you can use curl to issue a couple
 of test requests:</p>
 <div class="bash highlight"><pre><span></span><code>curl \
@@ -604,7 +622,7 @@ extra in the <code>django-ninja-jwt</code> requirement:</p>
 <div class="codehilite"><pre><span></span><code><span class="n">pip</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">django</span><span class="o">-</span><span class="n">ninja</span><span class="o">-</span><span class="n">jwt</span><span class="o">[</span><span class="n">crypto</span><span class="o">]</span><span class="w"></span>
 </code></pre></div>
 
-<p>The <code>django-ninja-jwt[crypto]</code> format is recommended in requirements
+<p>The <code>django-ninja-jwt[crypto]</code> format is recommended in requirement
 files in projects using <code>Ninja JWT</code>, as a separate <code>cryptography</code> requirement
 line may later be mistaken for an unused requirement and removed.
 <a href="https://cryptography.io">cryptography</a></p>

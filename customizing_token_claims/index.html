@@ -490,8 +490,8 @@ its corresponding serializer. Here\'s an example :</p>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 </div>
-<p>if you are interested in Asynchronous version of the class, use <code>AsyncNinjaJWTDefaultController</code> and <code>AsyncNinjaJWTSlidingController</code>.
-Also note, it's only available for Django versions that supports asynchronous actions.</p>
+<p>if you are interested in an Asynchronous version of the class, use <code>AsyncNinjaJWTDefaultController</code> and <code>AsyncNinjaJWTSlidingController</code>.
+Also note, it's only available for Django versions that support asynchronous actions.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">ninja_jwt.schema</span> <span class="kn">import</span> <span class="n">TokenObtainPairInputSchema</span>
 <span class="kn">from</span> <span class="nn">ninja_jwt.controller</span> <span class="kn">import</span> <span class="n">TokenObtainPairController</span>
 <span class="kn">from</span> <span class="nn">ninja_extra</span> <span class="kn">import</span> <span class="n">api_controller</span><span class="p">,</span> <span class="n">route</span>
@@ -526,7 +526,7 @@ Also note, it's only available for Django versions that supports asynchronous ac
 </code></pre></div>
 <p>As with the standard controller, you\'ll also need to include register the controller as shown in <code>getting_started</code></p>
 <h4 id="use-django-ninja-router">Use Django Ninja Router</h4>
-<p>If you interested in using functions rather than classes, then you are also covered.
+<p>If you are interested in using functions rather than classes, then you are also covered.
 Here is an example</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">ninja_jwt.routers.blacklist</span> <span class="kn">import</span> <span class="n">blacklist_router</span>
 <span class="kn">from</span> <span class="nn">ninja_jwt.routers.obtain</span> <span class="kn">import</span> <span class="n">obtain_pair_router</span><span class="p">,</span> <span class="n">sliding_router</span>

@@ -71,7 +71,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#route-authentication-class-based" class="md-skip">
+        <a href="#route-authenticationclass-based" class="md-skip">
           Skip to content
         </a>
       
@@ -299,25 +299,25 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#route-authentication-class-based" class="md-nav__link">
-    Route Authentication - Class Based
+  <a href="#route-authenticationclass-based" class="md-nav__link">
+    Route Authentication—Class Based
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#route-authentication-function-based" class="md-nav__link">
-    Route Authentication - Function Based
+  <a href="#route-authenticationfunction-based" class="md-nav__link">
+    Route Authentication—Function Based
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#custom-auth-implement" class="md-nav__link">
-    Custom Auth Implement
+  <a href="#custom-auth-implementation" class="md-nav__link">
+    Custom Auth Implementation
   </a>
   
-    <nav class="md-nav" aria-label="Custom Auth Implement">
+    <nav class="md-nav" aria-label="Custom Auth Implementation">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -471,25 +471,25 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#route-authentication-class-based" class="md-nav__link">
-    Route Authentication - Class Based
+  <a href="#route-authenticationclass-based" class="md-nav__link">
+    Route Authentication—Class Based
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#route-authentication-function-based" class="md-nav__link">
-    Route Authentication - Function Based
+  <a href="#route-authenticationfunction-based" class="md-nav__link">
+    Route Authentication—Function Based
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#custom-auth-implement" class="md-nav__link">
-    Custom Auth Implement
+  <a href="#custom-auth-implementation" class="md-nav__link">
+    Custom Auth Implementation
   </a>
   
-    <nav class="md-nav" aria-label="Custom Auth Implement">
+    <nav class="md-nav" aria-label="Custom Auth Implementation">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -525,7 +525,7 @@
                 
                 <p>Ninja JWT uses Django Ninja <code>HttpBearer</code> as a way to authenticate users reaching your api endpoint.
 Authenticated user can be found in <code>request.user</code> or <code>request.auth</code></p>
-<h3 id="route-authentication-class-based">Route Authentication - Class Based</h3>
+<h3 id="route-authenticationclass-based">Route Authentication—Class Based</h3>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">ninja_extra</span> <span class="kn">import</span> <span class="n">api_controller</span><span class="p">,</span> <span class="n">route</span>
 <span class="kn">from</span> <span class="nn">ninja_jwt.authentication</span> <span class="kn">import</span> <span class="n">JWTAuth</span>
 
@@ -535,17 +535,17 @@ Authenticated user can be found in <code>request.user</code> or <code>request.au
     <span class="k">def</span> <span class="nf">some_endpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="o">...</span>
 </code></pre></div>
-<h3 id="route-authentication-function-based">Route Authentication - Function Based</h3>
+<h3 id="route-authenticationfunction-based">Route Authentication—Function Based</h3>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">ninja</span> <span class="kn">import</span> <span class="n">router</span>
 <span class="kn">from</span> <span class="nn">ninja_jwt.authentication</span> <span class="kn">import</span> <span class="n">JWTAuth</span>
 
 <span class="n">router</span> <span class="o">=</span> <span class="n">router</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
 
 <span class="nd">@router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/some-endpoint&#39;</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="n">JWTAuth</span><span class="p">())</span>
-<span class="k">def</span> <span class="nf">some_endpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">some_endpoint</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="o">...</span>
 </code></pre></div>
-<h2 id="custom-auth-implement">Custom Auth Implement</h2>
+<h2 id="custom-auth-implementation">Custom Auth Implementation</h2>
 <p>If you wish to use a different implementation of <code>JWTAuth</code>, then you need to inherit from <code>JWTBaseAuthentication</code>.
 Please read more on <a href="https://django-ninja.rest-framework.com/tutorial/authentication/">Django Ninja - Authentication</a>, if you want to use a different approach that is not <code>bearer</code>.</p>
 <p>example:
