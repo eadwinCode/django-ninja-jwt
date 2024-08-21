@@ -18,8 +18,8 @@ __all__ = [
     "AsyncTokenObtainPairController",
     "AsyncTokenObtainSlidingController",
     "AsyncTokenObtainSlidingController",
-    # "AsyncNinjaJWTDefaultController",
-    # "AsyncNinjaJWTSlidingController",
+    "AsyncNinjaJWTDefaultController",
+    "AsyncNinjaJWTSlidingController",
 ]
 
 schema = SchemaControl(api_settings)
