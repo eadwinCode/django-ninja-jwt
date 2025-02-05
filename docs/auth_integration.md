@@ -30,7 +30,7 @@ def some_endpoint(request):
 
 ## Custom Auth Implementation
 If you wish to use a different implementation of `JWTAuth`, then you need to inherit from `JWTBaseAuthentication`.
-Please read more on [Django Ninja - Authentication](https://django-ninja.rest-framework.com/tutorial/authentication/), if you want to use a different approach that is not `bearer`.
+Please read more on [Django Ninja - Authentication](https://django-ninja.dev/guides/authentication/), if you want to use a different approach that is not `bearer`.
 
 example:
 ```python
