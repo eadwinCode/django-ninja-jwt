@@ -75,6 +75,3 @@ def format_lazy(s: str, *args, **kwargs) -> str:
 
 
 format_lazy: t.Callable = lazy(format_lazy, str)
-
-
-format_lazy = lazy(format_lazy, str)
