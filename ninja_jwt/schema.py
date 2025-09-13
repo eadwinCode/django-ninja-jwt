@@ -175,7 +175,7 @@ class TokenObtainInputSchemaBase(ModelSchema, TokenInputSchemaMixin):
         values.__dict__.update(token_data=data)
 
         if api_settings.UPDATE_LAST_LOGIN:
-            update_last_login(None, cls._user)
+            update_last_login(None, values._user)
 
     def get_response_schema_init_kwargs(self) -> dict:
         return dict(
