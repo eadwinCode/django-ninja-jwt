@@ -132,6 +132,7 @@ class TokenObtainInputSchemaBase(ModelSchema, TokenInputSchemaMixin):
         model_fields = ["password", user_name_field]
 
     @model_validator(mode="before")
+    @classmethod
     def validate_inputs(cls, values: SCHEMA_INPUT) -> dict:
         schema_input = SchemaInputService(values, cls.model_config)
         input_values = schema_input.get_values()
@@ -141,6 +142,7 @@ class TokenObtainInputSchemaBase(ModelSchema, TokenInputSchemaMixin):
         return values
 
     @model_validator(mode="after")
+    @classmethod
     def post_validate(
         cls, values: "TokenObtainInputSchemaBase", info: ValidationInfo
     ) -> BaseModel:
@@ -228,6 +230,7 @@ class TokenRefreshInputSchema(Schema, InputSchemaMixin):
     refresh: str
 
     @model_validator(mode="before")
+    @classmethod
     def validate_schema(cls, values: SCHEMA_INPUT) -> dict:
         schema_input = SchemaInputService(values, cls.model_config)
         values = schema_input.get_values()
@@ -248,6 +251,7 @@ class TokenRefreshOutputSchema(Schema):
 
     @model_validator(mode="before")
     @token_error
+    @classmethod
     def validate_schema(cls, values: SCHEMA_INPUT) -> typing.Any:
         schema_input = SchemaInputService(values, cls.model_config)
         values = schema_input.get_values()
@@ -285,6 +289,7 @@ class TokenRefreshSlidingInputSchema(Schema, InputSchemaMixin):
     token: str
 
     @model_validator(mode="before")
+    @classmethod
     def validate_schema(cls, values: SCHEMA_INPUT) -> dict:
         schema_input = SchemaInputService(values, cls.model_config)
         values = schema_input.get_values()
@@ -304,6 +309,7 @@ class TokenRefreshSlidingOutputSchema(Schema):
 
     @model_validator(mode="before")
     @token_error
+    @classmethod
     def validate_schema(cls, values: SCHEMA_INPUT) -> dict:
         schema_input = SchemaInputService(values, cls.model_config)
         values = schema_input.get_values()
@@ -330,6 +336,7 @@ class TokenVerifyInputSchema(Schema, InputSchemaMixin):
 
     @model_validator(mode="before")
     @token_error
+    @classmethod
     def validate_schema(cls, values: SCHEMA_INPUT) -> Dict:
         schema_input = SchemaInputService(values, cls.model_config)
         values = schema_input.get_values()
@@ -362,6 +369,7 @@ class TokenBlacklistInputSchema(Schema, InputSchemaMixin):
 
     @model_validator(mode="before")
     @token_error
+    @classmethod
     def validate_schema(cls, values: DjangoGetter) -> dict:
         schema_input = SchemaInputService(values, cls.model_config)
         values = schema_input.get_values()
@@ -411,3 +419,4 @@ def __getattr__(name: str) -> Any:  # pragma: no cover
         )
         return value
     raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
+
