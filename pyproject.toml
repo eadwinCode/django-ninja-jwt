@@ -51,6 +51,7 @@ dependencies = [
     "pyjwt>=1.7.1,<3",
     "pyjwt[crypto]",
     "django-ninja-extra >= 0.22.9",
+    "pydantic-settings>=2.0.0",
 ]
 
 

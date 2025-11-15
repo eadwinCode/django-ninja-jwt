@@ -4,7 +4,8 @@ from typing import Any, List, Optional, Union
 from django.conf import settings
 from django.test.signals import setting_changed
 from ninja_extra.lazy import LazyStrImport
-from pydantic.v1 import AnyUrl, BaseModel, Field, root_validator
+from pydantic import AnyUrl, Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class NinjaJWTUserDefinedSettingsMapper:
@@ -27,10 +28,11 @@ USER_SETTINGS = NinjaJWTUserDefinedSettingsMapper(
 )
 
 
-class NinjaJWTSettings(BaseModel):
-    class Config:
-        orm_mode = True
-        validate_assignment = True
+class NinjaJWTSettings(BaseSettings):
+    model_config = SettingsConfigDict(
+        validate_assignment=True,
+        extra="ignore",
+    )
 
     ACCESS_TOKEN_LIFETIME: timedelta = Field(timedelta(minutes=5))
     REFRESH_TOKEN_LIFETIME: timedelta = Field(timedelta(days=1))
@@ -82,20 +84,21 @@ class NinjaJWTSettings(BaseModel):
     )
     TOKEN_VERIFY_INPUT_SCHEMA: Any = Field("ninja_jwt.schema.TokenVerifyInputSchema")
 
-    @root_validator
-    def validate_ninja_jwt_settings(cls, values):
-        for item in NinjaJWT_SETTINGS_DEFAULTS.keys():
-            if isinstance(values[item], (tuple, list)) and isinstance(
-                values[item][0], str
-            ):
-                values[item] = [LazyStrImport(str(klass)) for klass in values[item]]
-            if isinstance(values[item], str):
-                values[item] = LazyStrImport(values[item])
-        return values
+    def __getattribute__(self, item):
+        # Get the actual value using object.__getattribute__ to avoid recursion
+        value = object.__getattribute__(self, item)
+
+        if item in NinjaJWT_SETTINGS_DEFAULTS:
+            if isinstance(value, (list, tuple)) and value and isinstance(value[0], str):
+                return [LazyStrImport(str(klass)) for klass in value]
+            elif isinstance(value, str):
+                return LazyStrImport(value)
+
+        return value
 
 
 # convert to lazy object
-api_settings = NinjaJWTSettings.from_orm(USER_SETTINGS)
+api_settings = NinjaJWTSettings.model_validate(USER_SETTINGS.__dict__)
 
 
 def reload_api_settings(*args: Any, **kwargs: Any) -> None:
@@ -104,9 +107,7 @@ def reload_api_settings(*args: Any, **kwargs: Any) -> None:
     setting, value = kwargs["setting"], kwargs["value"]
 
     if setting in ["SIMPLE_JWT", "NINJA_JWT"]:
-        api_settings = NinjaJWTSettings.from_orm(
-            NinjaJWTUserDefinedSettingsMapper(value)
-        )
+        api_settings = NinjaJWTSettings.model_validate(value)
 
 
 setting_changed.connect(reload_api_settings)
