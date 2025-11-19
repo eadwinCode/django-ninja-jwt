@@ -141,9 +141,7 @@ class TokenObtainInputSchemaBase(ModelSchema, TokenInputSchemaMixin):
         return values
 
     @model_validator(mode="after")
-    def post_validate(
-        self, info: ValidationInfo
-    ) -> BaseModel:
+    def post_validate(self, info: ValidationInfo) -> BaseModel:
         schema_input = SchemaInputService(
             self.model_dump(), self.__class__.model_config, info.context.get("request")
         )
