@@ -54,9 +54,9 @@ class SchemaInputService:
 
 
 class AuthUserSchema(ModelSchema):
-    class Config:
+    class Meta:
         model = get_user_model()
-        model_fields = [user_name_field]
+        fields = [user_name_field]
 
 
 class InputSchemaMixin:
@@ -126,10 +126,10 @@ class TokenInputSchemaMixin(InputSchemaMixin):
 
 
 class TokenObtainInputSchemaBase(ModelSchema, TokenInputSchemaMixin):
-    class Config:
+    class Meta:
         # extra = "forbid"
         model = get_user_model()
-        model_fields = ["password", user_name_field]
+        fields = ["password", user_name_field]
 
     @model_validator(mode="before")
     def validate_inputs(cls, values: SCHEMA_INPUT) -> dict:
