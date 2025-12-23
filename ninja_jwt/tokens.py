@@ -20,7 +20,7 @@ class Token:
     """
 
     token_type: Optional[str] = None
-    lifetime: Optional[datetime] = None
+    lifetime: Optional[timedelta] = None
 
     def __init__(self, token: Optional[Any] = None, verify: bool = True) -> None:
         """
@@ -133,7 +133,7 @@ class Token:
         self,
         claim: str = "exp",
         from_time: Optional[datetime] = None,
-        lifetime: Optional[datetime] = None,
+        lifetime: Optional[timedelta] = None,
     ) -> None:
         """
         Updates the expiration time of a token.
