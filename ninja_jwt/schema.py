@@ -11,7 +11,7 @@ from ninja import ModelSchema, Schema
 from ninja.schema import DjangoGetter
 from ninja_extra import service_resolver
 from ninja_extra.context import RouteContext
-from pydantic import ConfigDict, ValidationInfo, model_validator
+from pydantic import ConfigDict, SecretStr, ValidationInfo, model_validator
 from pydantic.main import BaseModel
 
 import ninja_jwt.exceptions as exceptions
@@ -126,6 +126,8 @@ class TokenInputSchemaMixin(InputSchemaMixin):
 
 
 class TokenObtainInputSchemaBase(ModelSchema, TokenInputSchemaMixin):
+    password: SecretStr
+
     class Meta:
         # extra = "forbid"
         model = get_user_model()
