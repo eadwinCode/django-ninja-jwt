@@ -149,9 +149,12 @@ class TokenObtainInputSchemaBase(ModelSchema, TokenInputSchemaMixin):
         )
 
         credentials = schema_input.get_values()
-        password: SecretStr = credentials.pop("password")
-        if password and isinstance(password, SecretStr):
-            credentials["password"] = password.get_secret_value()
+        password: Union[SecretStr, str] = credentials.pop("password")
+        if password:
+            if isinstance(password, SecretStr):
+                credentials["password"] = password.get_secret_value()
+            else:  # pragma: no cover
+                credentials["password"] = password
         request = schema_input.get_request()
 
         self.authenticate(request, credentials)
