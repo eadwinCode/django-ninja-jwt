@@ -42,7 +42,7 @@ class NinjaJWTSettings(BaseSettings):
     ALGORITHM: str = Field("HS256")
     SIGNING_KEY: str = Field(settings.SECRET_KEY)
     VERIFYING_KEY: Optional[str] = Field("")
-    AUDIENCE: Optional[str] = Field(None)
+    AUDIENCE: Optional[Union[str,List[str]]] = Field(None)
     ISSUER: Optional[str] = Field(None)
     JWK_URL: Optional[AnyUrl] = Field(None)
     LEEWAY: Union[int, timedelta] = Field(0)
