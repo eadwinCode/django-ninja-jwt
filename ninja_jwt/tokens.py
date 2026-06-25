@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Any, Optional, Self, Tuple
+from typing import Any, Optional, Tuple, TypeVar
 from uuid import uuid4
 
 from django.conf import settings
@@ -11,6 +11,8 @@ from .exceptions import TokenBackendError, TokenError
 from .settings import api_settings
 from .token_blacklist.models import BlacklistedToken, OutstandingToken
 from .utils import aware_utcnow, datetime_from_epoch, datetime_to_epoch, format_lazy
+
+T = TypeVar("T", bound="Token")
 
 
 class Token:
@@ -181,7 +183,7 @@ class Token:
             raise TokenError(format_lazy(_("Token '{}' claim has expired"), claim))
 
     @classmethod
-    def for_user(cls, user: AbstractBaseUser) -> Self:
+    def for_user(cls: T, user: AbstractBaseUser) -> T:
         """
         Returns an authorization token for the given user that will be provided
         after authenticating the user's credentials.
@@ -253,7 +255,7 @@ class BlacklistMixin:
             return BlacklistedToken.objects.get_or_create(token=token)
 
         @classmethod
-        def for_user(cls, user: "AbstractBaseUser") -> Self:
+        def for_user(cls: T, user: "AbstractBaseUser") -> T:
             """
             Adds this token to the outstanding token list.
             """
