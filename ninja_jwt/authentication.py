@@ -137,3 +137,11 @@ if not django.VERSION < (3, 1):
     ):
         async def authenticate(self, request: HttpRequest, token: str) -> Any:
             return await self.async_jwt_authenticate(request, token)
+
+
+class SuperUserAuth(JWTAuth):
+    def get_user(self, validated_token):
+        user = super().get_user(validated_token)
+        if not user.is_superuser:
+            raise AuthenticationFailed("User must be superuser")
+        return user
