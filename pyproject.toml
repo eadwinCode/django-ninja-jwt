@@ -14,7 +14,6 @@ authors = [
 dynamic = ["version", "description"]
 requires-python = ">=3.7"
 readme = "README.md"
-home-page = "https://github.com/eadwinCode/django-ninja-jwt"
 classifiers = [
     "Intended Audience :: Information Technology",
     "Intended Audience :: System Administrators",
@@ -56,6 +55,7 @@ dependencies = [
 
 
 [project.urls]
+Homepage = "https://github.com/eadwinCode/django-ninja-jwt"
 Documentation = "https://github.com/eadwinCode/django-ninja-jwt"
 Source = "https://github.com/eadwinCode/django-ninja-jwt"
 
