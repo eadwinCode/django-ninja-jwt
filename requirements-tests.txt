@@ -4,7 +4,7 @@ django-stubs
 freezegun
 ninja-schema>=0.14.3
 pytest
-pytest-asyncio==1.4.0
+pytest-asyncio==1.4.1
 pytest-cov
 pytest-django
 ruff ==0.16.5
